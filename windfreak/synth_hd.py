@@ -395,12 +395,25 @@ class SynthHD(SerialDevice, Sequence):
     def __init__(self, devpath):
         super().__init__(devpath)
         self._model = None
-        self._model = self.model
-        if 'v2' in self.model:
-            channel_type = SynthHDv2Channel
-        else:
-            channel_type = SynthHDChannel
-        self._channels = [channel_type(self, index) for index in range(2)]
+        try:
+            try:
+                detected_model = self.model
+                self._model = detected_model
+            except Exception as exc:
+                raise RuntimeError('Failed to detect model') from exc
+        
+            if 'v2' in self.model:
+                channel_type = SynthHDv2Channel
+            else:
+                channel_type = SynthHDChannel
+            
+            self._channels = [channel_type(self, index) for index in range(2)]
+        except:
+            try:
+                self.close()
+            except Exception as cleanup_err:
+                exc.add_note(f'Windfreak cleanup also failed: {cleanup_err}')
+            raise
 
     def __getitem__(self, key):
         return self._channels.__getitem__(key)
