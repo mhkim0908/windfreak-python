@@ -133,7 +133,7 @@ class SynthHDChannel:
     @temp_compensation_mode.setter
     def temp_compensation_mode(self, value):
         modes = self.temp_compensation_modes
-        if not value in modes:
+        if value not in modes:
             raise ValueError('Expected str in set {}.'.format(modes))
         self.write('temp_comp_mode', modes.index(value))
 
@@ -441,6 +441,9 @@ class SynthHD(SerialDevice, Sequence):
                 return None
         elif 'Version 1.4' in hw_ver:
             return 'SynthHD v1.4'
+        elif 'Version 1.10' in hw_ver:
+            return 'SynthHD mini'
+
         else:
             # Unsupported hardware version. Return None.
             return None
@@ -511,7 +514,7 @@ class SynthHD(SerialDevice, Sequence):
             value (str): mode
         """
         modes = self.reference_modes
-        if not value in modes:
+        if value not in modes:
             raise ValueError('Expected str in set {}.'.format(modes))
         self.write('reference_mode', modes.index(value))
 
@@ -552,7 +555,7 @@ class SynthHD(SerialDevice, Sequence):
             value (str): mode
         """
         modes = self.trigger_modes
-        if not value in modes:
+        if value not in modes:
             raise ValueError('Expected str in set {}.'.format(modes))
         self.write('trig_function', modes.index(value))
 
